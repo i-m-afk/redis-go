@@ -27,11 +27,11 @@ func main() {
 			os.Exit(1)
 		}
 
-		handleConnection(conn)
+		go handleConnection(conn)
 	}
 }
 
-func handleConnection(conn net.Conn) {
+func handleConnection(conn net.Conn) (err error) {
 	for {
 		// TODO: Read data (write a command parser)
 		buffer := make([]byte, 1024)
@@ -42,11 +42,13 @@ func handleConnection(conn net.Conn) {
 		}
 		if err != nil {
 			fmt.Println("Error reading data from connection: ", err.Error())
-			return
+			return err
 		}
 
 		fmt.Println("Recieved : ", string(buffer[:n]))
 
 		conn.Write([]byte(fmt.Sprintf("+PONG\r\n")))
 	}
+
+	return nil
 }
