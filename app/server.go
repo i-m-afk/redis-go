@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"io"
 	"net"
 	"os"
 )
@@ -30,16 +32,21 @@ func main() {
 }
 
 func handleConnection(conn net.Conn) {
-	// TODO: Read data (write a command parser)
-	buffer := make([]byte, 1024)
-	n, err := conn.Read(buffer)
-	if err != nil {
-		fmt.Println("Error reading data from connection: ", err.Error())
-		return
+	for {
+		// TODO: Read data (write a command parser)
+		buffer := make([]byte, 1024)
+		n, err := conn.Read(buffer)
+
+		if errors.Is(err, io.EOF) {
+			break
+		}
+		if err != nil {
+			fmt.Println("Error reading data from connection: ", err.Error())
+			return
+		}
+
+		fmt.Println("Recieved : ", string(buffer[:n]))
+
+		conn.Write([]byte(fmt.Sprintf("+PONG\r\n")))
 	}
-
-	fmt.Println("Recieved : ", string(buffer[:n]))
-
-	conn.Write([]byte(fmt.Sprintf("+PONG\r\n")))
-	conn.Write([]byte(fmt.Sprintf("+PONG\r\n")))
 }
