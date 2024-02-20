@@ -30,6 +30,16 @@ func main() {
 }
 
 func handleConnection(conn net.Conn) {
-	// TODO: Read data
+	// TODO: Read data (write a command parser)
+	buffer := make([]byte, 1024)
+	n, err := conn.Read(buffer)
+	if err != nil {
+		fmt.Println("Error reading data from connection: ", err.Error())
+		return
+	}
+
+	fmt.Println("Recieved : ", string(buffer[:n]))
+
+	conn.Write([]byte(fmt.Sprintf("+PONG\r\n")))
 	conn.Write([]byte(fmt.Sprintf("+PONG\r\n")))
 }
