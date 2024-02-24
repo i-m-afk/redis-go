@@ -6,6 +6,8 @@ import (
 	"io"
 	"net"
 	"os"
+
+	"github.com/codecrafters-io/redis-starter-go/app/internal/parser"
 )
 
 func main() {
@@ -32,8 +34,8 @@ func main() {
 }
 
 func handleConnection(conn net.Conn) (err error) {
+	defer conn.Close()
 	for {
-		// TODO: Read data (write a command parser)
 		buffer := make([]byte, 1024)
 		n, err := conn.Read(buffer)
 
@@ -44,11 +46,10 @@ func handleConnection(conn net.Conn) (err error) {
 			fmt.Println("Error reading data from connection: ", err.Error())
 			return err
 		}
-
-		fmt.Println("Recieved : ", string(buffer[:n]))
-
-		conn.Write([]byte(fmt.Sprintf("+PONG\r\n")))
+		parser.Parse(conn, string(buffer[:n]))
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
-
 	return nil
 }
