@@ -2,10 +2,12 @@ package parser
 
 import (
 	"fmt"
-	"net"
+
+	"github.com/codecrafters-io/redis-starter-go/app/internal/configuration"
 )
 
-func commandPong(conn net.Conn, args ...string) error {
+func commandPing(conf *configuration.Config, args ...string) error {
+	conn := conf.Conn
 	_, err := conn.Write([]byte(fmt.Sprintf("+PONG\r\n")))
 	if err != nil {
 		fmt.Println("Error occured in writing ", err)

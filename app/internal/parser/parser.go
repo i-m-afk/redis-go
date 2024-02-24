@@ -2,13 +2,14 @@ package parser
 
 import (
 	"fmt"
-	"net"
+
+	"github.com/codecrafters-io/redis-starter-go/app/internal/configuration"
 )
 
-func ParseCommand(conn net.Conn, commandName string, args []string) {
+func ParseCommand(conf *configuration.Config, commandName string, args []string) {
 	command, exits := Commands()[commandName]
 	if exits {
-		err := command.callback(conn, args...)
+		err := command.callback(conf, args...)
 		if err != nil {
 			fmt.Println(err)
 		}

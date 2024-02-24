@@ -2,11 +2,13 @@ package parser
 
 import (
 	"fmt"
-	"net"
 	"strings"
+
+	"github.com/codecrafters-io/redis-starter-go/app/internal/configuration"
 )
 
-func commandEcho(conn net.Conn, args ...string) error {
+func commandEcho(conf *configuration.Config, args ...string) error {
+	conn := conf.Conn
 	var str strings.Builder
 	for _, arg := range args {
 		l := len(arg)

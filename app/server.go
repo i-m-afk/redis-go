@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 
+	"github.com/codecrafters-io/redis-starter-go/app/internal/configuration"
 	"github.com/codecrafters-io/redis-starter-go/app/internal/parser"
 )
 
@@ -28,12 +29,15 @@ func main() {
 			fmt.Println("Error accepting connection: ", err.Error())
 			os.Exit(1)
 		}
-
-		go handleConnection(conn)
+		// configs
+		conf := configuration.Config{}
+		conf.InitConfig(conn)
+		go handleConnection(&conf)
 	}
 }
 
-func handleConnection(conn net.Conn) (err error) {
+func handleConnection(conf *configuration.Config) (err error) {
+	conn := conf.Conn
 	defer conn.Close()
 	for {
 		buffer := make([]byte, 1024)
@@ -46,7 +50,7 @@ func handleConnection(conn net.Conn) (err error) {
 			fmt.Println("Error reading data from connection: ", err.Error())
 			return err
 		}
-		parser.Parse(conn, string(buffer[:n]))
+		parser.Parse(conf, string(buffer[:n]))
 		if err != nil {
 			fmt.Println(err)
 		}

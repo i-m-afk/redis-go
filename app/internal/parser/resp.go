@@ -1,8 +1,9 @@
 package parser
 
 import (
-	"net"
 	"strings"
+
+	"github.com/codecrafters-io/redis-starter-go/app/internal/configuration"
 )
 
 type RESPType int
@@ -19,7 +20,7 @@ const (
 func compare(ch byte) bool {
 	return ch == Error || ch == Integer || ch == BulkString || ch == String || ch == Array
 }
-func Parse(conn net.Conn, input string) {
+func Parse(conf *configuration.Config, input string) {
 	parts := strings.Split(strings.ToLower(input), "\r\n")
 	// hack
 	something := make([]string, 0)
@@ -32,5 +33,5 @@ func Parse(conn net.Conn, input string) {
 		}
 	}
 	command := something[0]
-	ParseCommand(conn, command, something[1:])
+	ParseCommand(conf, command, something[1:])
 }
