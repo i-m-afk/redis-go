@@ -3,6 +3,7 @@ package configuration
 import (
 	"net"
 	"sync"
+	"time"
 )
 
 type Config struct {
@@ -14,6 +15,7 @@ type Config struct {
 type RedisStore struct {
 	Value string
 	Type  RESPType
+	Ttl   int
 }
 
 type RESPType byte
@@ -30,6 +32,25 @@ const (
 func (conf *Config) InitConfig(conn net.Conn) *Config {
 	conf.Conn = conn
 	conf.Store = make(map[string]RedisStore)
-	conf.Mux = sync.Mutex{}
+	go conf.reapLoop(1 * time.Millisecond)
 	return conf
+}
+
+func (conf *Config) reapLoop(dur time.Duration) {
+	tick := time.NewTicker(dur)
+	defer tick.Stop()
+	for range tick.C {
+		conf.reap(dur)
+	}
+}
+
+func (conf *Config) reap(dur time.Duration) {
+	conf.Mux.Lock()
+	defer conf.Mux.Unlock()
+	currentTimestamp := time.Now().Unix()
+	for key, val := range conf.Store {
+		if int64(val.Ttl) < currentTimestamp {
+			delete(conf.Store, key)
+		}
+	}
 }

@@ -19,6 +19,7 @@ func commandGet(conf *configuration.Config, args ...string) error {
 
 	value, ok := conf.Store[key]
 	if !ok {
+		conf.Conn.Write([]byte("$-1\r\n"))
 		return fmt.Errorf("key %s not found", key)
 	}
 	// TODO:
