@@ -7,9 +7,11 @@ import (
 )
 
 type Config struct {
-	Conn  net.Conn
-	Store map[string]RedisStore
-	Mux   sync.Mutex
+	Conn   net.Conn
+	Store  map[string]RedisStore
+	Mux    sync.Mutex
+	Dir    string
+	DbName string
 }
 
 type RedisStore struct {
@@ -29,8 +31,10 @@ const (
 	Array                 = '*'
 )
 
-func (conf *Config) InitConfig(conn net.Conn) *Config {
+func (conf *Config) InitConfig(conn net.Conn, dir *string, dbfilename *string) *Config {
 	conf.Conn = conn
+	conf.Dir = *dir
+	conf.DbName = *dbfilename
 	conf.Store = make(map[string]RedisStore)
 	go conf.reapLoop(1 * time.Millisecond)
 	return conf

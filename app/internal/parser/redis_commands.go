@@ -32,5 +32,10 @@ func Commands() map[string]RedisCommand {
 			description: "Get the value of key. If the key does not exist the special value nil is returned. An error is returned if the value stored at key is not a string, because GET only handles string values.",
 			callback:    commandGet,
 		},
+		"config": {
+			name:        "config get",
+			description: "The CONFIG GET command is used to read the configuration parameters of a running Redis server. Not all the configuration parameters are supported in Redis 2.4, while Redis 2.6 can read the whole configuration of a server using this command.",
+			callback:    commandConfigGet,
+		},
 	}
 }
